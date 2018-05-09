@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTextStream>
+#include <QThread>
 
 enum LexType{
     PROGRAM=1,TYPE,   VAR,    PROCEDURE,
@@ -48,22 +49,28 @@ private:
     QString sem;
 };
 
-class Lex : public QObject
+class Lex : public QThread
 {
     Q_OBJECT
 public:
-    static Lex * getInstance(){
-        static Lex *lex=new Lex;
+    static Lex * getInstance(QString filename){
+        static Lex *lex=new Lex();
+        lex->setFileName(filename);
         return lex;
 
     }
     void setFileName(QString filename);
     Token * getTokenList();
 
-    private:
-    explicit Lex(QObject *parent = nullptr);
+
+
+private:
+//    explicit Lex(QObject *parent = nullptr);
 
 signals:
+    void charget(char c);
+    void idbuff_changed(QString buff);
+    void token_get(Token *token);
 
 
 public slots:
@@ -73,10 +80,21 @@ private:
     QTextStream ins;
     double intBuff;
     QString idBuff;
+    Token *current;
+    Token *head;
+    QString filename;
     int line_number;
+private:
+    bool ischar(char c);
+    bool isnum(char c);
+    bool issinglesep(char c);
+    Token *getsinglesep(char c);
+    Token *lookup(QString str);
 
 
-
+    // QThread interface
+protected:
+    void run();
 };
 
 #endif // LEX_H

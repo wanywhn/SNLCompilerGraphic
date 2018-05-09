@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTextStream>
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +45,13 @@ private:
     QString filename;
     QTextStream *ins;
     Lex *lex;
+
+    QThread *worker_thread;
+
+public slots:
+    void char_changed(char c);
+    void idbuff_changed(QString str);
+    void token_get(Token *token);
 };
 
 #endif // MAINWINDOW_H
