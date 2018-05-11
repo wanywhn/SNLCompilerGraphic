@@ -25,13 +25,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    lex.cpp
+        src/main.cpp \
+        src/mainwindow.cpp \
+    src/lex.cpp \
+    src/lexview.cpp \
+    src/parse.cpp
 
 HEADERS += \
-        mainwindow.h \
-    lex.h
+        src/mainwindow.h \
+    src/lex.h \
+    src/lexview.h \
+    src/globals.h \
+    src/parse.h
 
 FORMS += \
-        mainwindow.ui
+        src/mainwindow.ui
