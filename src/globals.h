@@ -634,32 +634,5 @@ extern  int StoreNoff ;
 
 
 
-/*************************************
- ***********   追踪标志   ************
- *************************************/
-
-/* 源程序追踪标志,如果该标志为TRUE			 *
- * 语法分析时将源程序行号写入列表文件listing */
-extern int EchoSource;
-
-/* 词法扫描追踪标志,如果该标志为TRUE				   *
- * 将每个被词法扫描器识别的单词信息写入列表文件listing */
-extern int TraceScan;
-
-/* 语法分析追踪标志,如果该标志为TRUE				     *
- * 将语法树以线性形式(使用子节点缩进)写入列表文件listing */
-extern int TraceParse;
-
-/* 语义分析追踪标志,如果该标志为TRUE	 *
- * 将符号表插入和查找写入列表文件listing */
-extern int TraceTable;
-
-
-extern int TraceCode;
-
-/* 错误追踪标志,如果该标志为TRUE *
- * 防止错误产生时进一步传递错误  */
-extern int Error;
-
 #endif
 	

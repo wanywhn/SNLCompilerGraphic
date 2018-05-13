@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "lex.h"
+#include "lexscene.h"
 
 #include <QLabel>
 #include <QListWidget>
@@ -33,10 +34,10 @@ private:
 private:
     Ui::MainWindow *ui;
 
-    QSplitter *splitter;
+    QSplitter *rightsplitter;
     QPlainTextEdit *editer_left;
     QTabWidget *tab_center_widget;
-    QGraphicsView *lexView;
+    LexScene *lexscene;
     QGraphicsView *parseView;
     QVBoxLayout *layout_right;
     QHBoxLayout *layout_left;

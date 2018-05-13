@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QTextStream>
 #include <QThread>
-
+#include <utility>
 #include "globals.h"
+#include <QPair>
+#include <QVector>
 
 //enum LexType{
 //    PROGRAM=1,TYPE,   VAR,    PROCEDURE,
@@ -37,13 +39,15 @@ class Lex : public QThread
     Q_OBJECT
 public:
     static Lex * getInstance(QString filename){
-        static Lex *lex=new Lex();
-        lex->setFileName(filename);
+        static auto *lex=new Lex();
+        lex->setFileName(std::move(filename));
+        lex->set_speed(300);
         return lex;
 
     }
     void setFileName(QString filename);
     Token * getTokenList();
+    void set_speed(int speed);
 
 
 
@@ -54,6 +58,7 @@ signals:
     void charget(char c);
     void idbuff_changed(QString buff);
     void token_get(Token *token);
+    void go_path(QVector<QPair<int,int>> v);
 
 
 public slots:
@@ -67,6 +72,7 @@ private:
     Token *head;
     QString filename;
     int line_number;
+    int sleep_time;
 private:
     bool ischar(char c);
     bool isnum(char c);
@@ -77,7 +83,7 @@ private:
 
     // QThread interface
 protected:
-    void run();
+    void run() override;
 };
 
 #endif // LEX_H

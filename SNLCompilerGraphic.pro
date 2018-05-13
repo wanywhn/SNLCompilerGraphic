@@ -28,15 +28,18 @@ SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
     src/lex.cpp \
-    src/lexview.cpp \
-    src/parse.cpp
+    src/lexscene.cpp \
+    src/parse.cpp \
+    src/utils.cpp
 
 HEADERS += \
         src/mainwindow.h \
     src/lex.h \
-    src/lexview.h \
+    src/lexscene.h \
     src/globals.h \
-    src/parse.h
+    src/parse.h \
+    src/utils.h \
+    src/globals.h
 
 FORMS += \
         src/mainwindow.ui

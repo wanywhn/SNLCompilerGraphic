@@ -39,7 +39,4 @@ begin
 		write(a[i]);
 		i:=i+1
 	endwh
-    'a'
-    '0'
-    'x'
 end.

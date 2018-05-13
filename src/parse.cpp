@@ -51,6 +51,7 @@ void Parse::match(LexType expected) {
     if (head->getLex() == expected) {
         head = head->next;
         line0 = head->getLine();
+        lineno=line0;
     } else {
         syntaxError("ERROR not match");
         exit(0);
@@ -81,7 +82,7 @@ TreeNode *Parse::declarePart() {
     TreeNode *tp = newDecANode(TypeK);
     TreeNode *pp = tp;
     if (nullptr != tp) {
-        tp->lineno = 0;
+        tp->lineno = 0;//TODO lineno=lineno??
         TreeNode *tp1 = typeDec();
         if (nullptr != tp1)
             tp->child[0] = tp1;
@@ -640,7 +641,7 @@ TreeNode *Parse::assignmentRest() {
     TreeNode *t = newStmtNode(AssignK);
 
     /* 赋值语句节点的第一个儿子节点记录赋值语句的左侧变量名，*
-    /* 第二个儿子结点记录赋值语句的右侧表达式*/
+     * 第二个儿子结点记录赋值语句的右侧表达式*/
     if (t != nullptr) {
         t->lineno = line0;
 

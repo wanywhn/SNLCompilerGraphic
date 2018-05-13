@@ -1,10 +1,13 @@
-#include "lexview.h"
+#include "lexscene.h"
 #include "mainwindow.h"
+#include "parse.h"
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
 #include <QGraphicsWidget>
 #include <QGroupBox>
+#include <QtWidgets/QWidgetAction>
+#include <QtGui/QSyntaxHighlighter>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -16,47 +19,40 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::init_ui() {
-  splitter = new QSplitter();
 
-  layout = new QHBoxLayout();
+    auto leftsplitter=new QSplitter(Qt::Horizontal);
 
-  editer_left = new QPlainTextEdit(splitter);
-  tab_center_widget = new QTabWidget(splitter);
+  editer_left = new QPlainTextEdit(leftsplitter);
+  tab_center_widget = new QTabWidget(leftsplitter);
   // TODO Add tabview
-  lexView=new LexView();
+  lexscene=new LexScene();
   parseView=new QGraphicsView();
 
-  tab_center_widget->addTab(lexView,QString(tr("LEX")));
+  auto view=new QGraphicsView(tab_center_widget);
+  view->setScene(lexscene);
+  tab_center_widget->addTab(view,QString(tr("LEX")));
   tab_center_widget->addTab(parseView,QString(tr("Parse")));
 
 
-  layout->addWidget(splitter);
 
-  layout_right = new QVBoxLayout();
+  rightsplitter = new QSplitter(Qt::Vertical,leftsplitter);
 
-  auto cclabel=new QLabel(this);
+  auto cclabel=new QLabel(rightsplitter);
   cclabel->setText(tr("CURRENT CHAR:"));
 
-  label_current_char = new QLabel(this);
+  label_current_char = new QLabel(rightsplitter);
   label_current_char->setText("EMPTY");
 
-  auto cllabel=new QLabel(this);
+  auto cllabel=new QLabel(rightsplitter);
   cllabel->setText(tr("CURRENT LINE:"));
 
-  label_current_line = new QLabel(this);
+  label_current_line = new QLabel(rightsplitter);
   label_current_line->setText("EMPTY");
 
-  listwidget_token = new QListWidget(this);
+  listwidget_token = new QListWidget(rightsplitter);
   listwidget_token->setMaximumWidth(200);
-  layout_right->addWidget(cclabel);
-  layout_right->addWidget(label_current_char);
-  layout_right->addWidget(cllabel);
-  layout_right->addWidget(label_current_line);
-  layout_right->addWidget(listwidget_token);
 
-  layout->addLayout(layout_right);
-
-  this->centralWidget()->setLayout(layout);
+    this->setCentralWidget(leftsplitter);
 
   auto openfile = new QAction(QString(tr("打开源代码")), this->menuBar());
   auto filemenu = this->menuBar()->addMenu(tr("&File"));
@@ -72,12 +68,30 @@ void MainWindow::init_ui() {
   auto exit = filemenu->addAction(tr("Exit"));
   connect(exit, &QAction::triggered, []() { qApp->exit(); });
 
-  auto action_lex = this->menuBar()->addAction(tr("LEX"));
+  auto menu_lex=this->menuBar()->addMenu("LEX");
+
+  menu_lex->addSeparator();
+
+  auto speed_slider=new QSlider(Qt::Horizontal,menu_lex);
+  speed_slider->setMaximum(100);
+  speed_slider->setMinimum(1);
+  speed_slider->setValue(100);
+  connect(speed_slider,&QSlider::valueChanged,[this](int value){
+    lex->set_speed(value);
+  });
+
+  auto speed_action=new QWidgetAction(menu_lex);
+  speed_action->setDefaultWidget(speed_slider);
+
+  menu_lex->addAction(speed_action);
+
+  auto action_lex=menu_lex->addAction("Lex");
   connect(action_lex, &QAction::triggered, [this]() {
   lex = Lex::getInstance(filename);
   connect(lex, &Lex::charget, this, &MainWindow::char_changed);
-  connect(lex, &::Lex::idbuff_changed, this, &MainWindow::idbuff_changed);
+  connect(lex, &Lex::idbuff_changed, this, &MainWindow::idbuff_changed);
   connect(lex,&Lex::token_get,this,&MainWindow::token_get);
+  connect(lex,&Lex::go_path,lexscene,&LexScene::show_path);
   lex->start();
 
   });
@@ -108,6 +122,8 @@ void MainWindow::token_get(Token *token)
 
 void MainWindow::re_parse()
 {
+     auto re=Parse::getInstance(lex->getTokenList());
+     re->start();
 
 }
 

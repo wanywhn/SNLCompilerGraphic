@@ -3,8 +3,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QThread>
+#include <utility>
 
-#define sleep_time 100
 
 QMap<LexType, QString> lexName = {{PROGRAM, "PROGRAM"},
                                   {TYPE, "TYPE"},
@@ -65,7 +65,7 @@ QMap<QString, LexType> reservedWords = {
 };
 
 void Lex::setFileName(QString filename) {
-  this->filename=filename;
+  this->filename= std::move(filename);
 }
 
 Token *Lex::getTokenList() {
@@ -84,7 +84,7 @@ bool Lex::isnum(char c) { return (c >= (0 + '0') && c <= (9 + '0')); }
 
 bool Lex::issinglesep(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' ||
-         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ',';
+         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ','||c==' ';
 }
 
 Token *Lex::getsinglesep(char c) {
@@ -122,6 +122,7 @@ void Lex::run()
       thread()->msleep(sleep_time);
 
       if (ischar(lookhead)) {
+          emit go_path({{0,1}});
         idBuff.append(lookhead);
         emit idbuff_changed(idBuff);
         thread()->msleep(sleep_time);
@@ -130,6 +131,7 @@ void Lex::run()
         emit charget(lookhead);
         thread()->msleep(sleep_time);
         while (ischar(lookhead) || isnum(lookhead)) {
+            emit go_path({{1,4},{4,3},{3,2},{2,1}});
           idBuff.append(lookhead);
           emit idbuff_changed(idBuff);
           thread()->msleep(sleep_time);
@@ -147,8 +149,10 @@ void Lex::run()
         ins.seek(ins.pos() - 1);
         idBuff.clear();
         emit idbuff_changed(idBuff);
+        emit go_path({{1,5},{5,41}});
         thread()->msleep(sleep_time);
       } else if (isnum(lookhead)) {
+          emit go_path({{0,6},{6,7}});
         idBuff.append(lookhead);
         emit idbuff_changed(idBuff);
 
@@ -156,6 +160,7 @@ void Lex::run()
         emit charget(lookhead);
 
         while (isdigit(lookhead)) {
+            emit go_path({{7,10},{10,9},{9,8},{8,7}});
           idBuff.append(lookhead);
         emit idbuff_changed(idBuff);
       thread()->msleep(sleep_time);
@@ -170,7 +175,9 @@ void Lex::run()
         current = tmp;
         ins.seek(ins.pos() - 1);
         idBuff.clear();
+          emit go_path({{7,11},{11,41}});
       } else if (issinglesep(lookhead)) {
+          emit go_path({{0,12},{12,13},{13,14},{14,41}});
           emit idbuff_changed(QString(lookhead));
         Token *tmp = getsinglesep(lookhead);
         emit token_get(tmp);
@@ -180,10 +187,12 @@ void Lex::run()
         switch (lookhead) {
 
         case '\n': {
+            emit go_path({{0,38},{38,39},{39,40},{40,41}});
           ++line_number;
           continue;
         }
         case ':': {
+            emit go_path({{0,15},{15,16}});
             idBuff.append(lookhead);
             emit idbuff_changed(idBuff);
       thread()->msleep(sleep_time);
@@ -195,7 +204,9 @@ void Lex::run()
           if (next != '=') {
             qDebug() << "ERROR,:=";
             ins.seek(ins.pos() - 1);
+            emit go_path({{16,17},{17,19},{19,41}});
           } else {
+              emit go_path({{16,18},{18,20},{20,41}});
             Token *tmp = new Token(line_number, ASSIGN, lexName[ASSIGN]);
             emit token_get(tmp);
             current->next = tmp;
@@ -207,6 +218,7 @@ void Lex::run()
           break;
         }
         case '{': {
+            emit go_path({{0,21},{21,22}});
             idBuff.append(lookhead);
             emit idbuff_changed(idBuff);
           while (lookhead != '}') {
@@ -216,10 +228,12 @@ void Lex::run()
             idBuff.append(lookhead);
             emit idbuff_changed(idBuff);
           }
+          emit go_path({{22,23},{23,41}});
           idBuff.clear();
           break;
         }
         case '.': {
+            emit go_path({{0,24},{24,25}});
             idBuff.append(lookhead);
           char next;
           ins >> next;
@@ -227,8 +241,10 @@ void Lex::run()
             idBuff.append(lookhead);
           Token *tmp;
           if (next == '.') {
+              emit go_path({{25,29},{29,41}});
             tmp = new Token(line_number, UNDERRANGE, lexName[UNDERRANGE]);
           } else {
+              emit go_path({{25,26},{26,28},{28,41}});
             tmp = new Token(line_number, DOT, lexName[DOT]);
             ins.seek(ins.pos() - 1);
           }
@@ -239,6 +255,7 @@ void Lex::run()
           break;
         }
         case '\'': {
+            emit go_path({{0,30},{30,31}});
             idBuff.append(lookhead);
             emit idbuff_changed(idBuff);
           char next;
@@ -247,11 +264,13 @@ void Lex::run()
 
       thread()->msleep(sleep_time);
           if (isnum(next) || ischar(next)) {
+              emit go_path({{31,33}});
             idBuff.append(next);
             emit idbuff_changed(idBuff);
             ins >> next;
             idBuff.append(lookhead);
             if (next == '\'') {
+                emit go_path({{33,35},{35,36},{36,41}});
               Token *tmp = new Token(line_number, CHARC_VAL, idBuff);
               current->next = tmp;
               current = tmp;
@@ -260,14 +279,23 @@ void Lex::run()
               ins.seek(ins.pos() - 2);
             }
           } else {
+              emit go_path({{31,32},{32,37},{37,41}});
             ins.seek(ins.pos() - 1);
             qDebug() << "following ' isn't a char or dig";
           }
           idBuff.clear();
           break;
         }
-        default: {}
+        default: {
+
+            emit go_path({{0,38},{38,40},{40,41}});
+        }
         }
       }
     }
+}
+
+void Lex::set_speed(int speed) {
+    sleep_time=speed*3;
+
 }
