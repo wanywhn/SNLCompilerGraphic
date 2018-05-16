@@ -13,6 +13,7 @@
 #include "stdlib.h"
 
 #include <QMap>
+#include <QSet>
 #include <QString>
 
 
@@ -55,7 +56,29 @@ typedef enum
 	ASSIGN,		EQ,			LT,		PLUS,		MINUS,
     TIMES,DIVIDE,		LPAREN,	RPAREN,		DOT,
     COLON,		SEMI,		COMMA,	LMIDPAREN,	RMIDPAREN,
-    UNDERRANGE
+    UNDERRANGE,
+
+
+
+
+    //feizhongjiefu
+    Program,	      ProgramHead,	    ProgramName,	DeclarePart,
+    TypeDec,        TypeDeclaration,	TypeDecList,	TypeDecMore,
+    TypeId,	      TypeName,			BaseType,	    StructureType,
+    ArrayType,      Low,	            Top,            RecType,
+    FieldDecList,   FieldDecMore,	    IdList,	        IdMore,
+    VarDec,	      VarDeclaration,	VarDecList,		VarDecMore,
+    VarIdList,	  VarIdMore,		ProcDec,		ProcDeclaration,
+    ProcDecMore,    ProcName,		    ParamList,		ParamDecList,
+    ParamMore,      Param,		    FormList,		FidMore,
+    ProcDecPart,    ProcBody,	    	ProgramBody,	StmList,
+    StmMore,        Stm,				AssCall,		AssignmentRest,
+    ConditionalStm, StmL,			    LoopStm,		InputStm,
+    InVar,          OutputStm,		ReturnStm,		CallStmRest,
+    ActParamList,   ActParamMore,		RelExp,			OtherRelE,
+    Exp,			  OtherTerm,		Term,           OtherFactor,
+    Factor,         Variable,			VariMore,		FieldVar,
+    FieldVarMore,   CmpOp,			AddOp,          MultOp
 } LexType;
 
 extern QMap<LexType,QString> lexName;
@@ -204,46 +227,51 @@ typedef struct treeNode
 /* 1.进行LL1语法分析用到的类型及对应的变量  */
 
 /*所有非终极符，其各自含义可参考LL1文法*/
-typedef enum
-{ 
-  Program,	      ProgramHead,	    ProgramName,	DeclarePart,
-  TypeDec,        TypeDeclaration,	TypeDecList,	TypeDecMore,
-  TypeId,	      TypeName,			BaseType,	    StructureType,
-  ArrayType,      Low,	            Top,            RecType,
-  FieldDecList,   FieldDecMore,	    IdList,	        IdMore,
-  VarDec,	      VarDeclaration,	VarDecList,		VarDecMore,
-  VarIdList,	  VarIdMore,		ProcDec,		ProcDeclaration,
-  ProcDecMore,    ProcName,		    ParamList,		ParamDecList,
-  ParamMore,      Param,		    FormList,		FidMore,
-  ProcDecPart,    ProcBody,	    	ProgramBody,	StmList,
-  StmMore,        Stm,				AssCall,		AssignmentRest,
-  ConditionalStm, StmL,			    LoopStm,		InputStm,
-  InVar,          OutputStm,		ReturnStm,		CallStmRest,
-  ActParamList,   ActParamMore,		RelExp,			OtherRelE,
-  Exp,			  OtherTerm,		Term,           OtherFactor,
-  Factor,         Variable,			VariMore,		FieldVar,
-  FieldVarMore,   CmpOp,			AddOp,          MultOp
-  
-}  NontmlType; 
+//typedef enum
+//{
+//  Program,	      ProgramHead,	    ProgramName,	DeclarePart,
+//  TypeDec,        TypeDeclaration,	TypeDecList,	TypeDecMore,
+//  TypeId,	      TypeName,			BaseType,	    StructureType,
+//  ArrayType,      Low,	            Top,            RecType,
+//  FieldDecList,   FieldDecMore,	    IdList,	        IdMore,
+//  VarDec,	      VarDeclaration,	VarDecList,		VarDecMore,
+//  VarIdList,	  VarIdMore,		ProcDec,		ProcDeclaration,
+//  ProcDecMore,    ProcName,		    ParamList,		ParamDecList,
+//  ParamMore,      Param,		    FormList,		FidMore,
+//  ProcDecPart,    ProcBody,	    	ProgramBody,	StmList,
+//  StmMore,        Stm,				AssCall,		AssignmentRest,
+//  ConditionalStm, StmL,			    LoopStm,		InputStm,
+//  InVar,          OutputStm,		ReturnStm,		CallStmRest,
+//  ActParamList,   ActParamMore,		RelExp,			OtherRelE,
+//  Exp,			  OtherTerm,		Term,           OtherFactor,
+//  Factor,         Variable,			VariMore,		FieldVar,
+//  FieldVarMore,   CmpOp,			AddOp,          MultOp
+//
+//}  NType;
 
-/*所有终极符，取自单词的词法类型的枚举定义，可参考zglobals.h头文件*/
-typedef LexType  TmlType;
+extern QSet<LexType> NTSet;
+extern QSet<LexType> TTSet;
+
+/*所有终极符，取自单词的词法类型的枚举定义*/
+//typedef LexType  TType;
 
 
-/*实现LL1分析用的分析栈，存放的是终极符和非终极符 */
-typedef struct Node
-{  /*内容标志*/
-   int flag;    /* flag为1，表示栈中内容为非终极符；*/
-                /* flag为2，表示栈中内容为终极符    */
-   /*内容*/
-   union { NontmlType Ntmlvar ;  /*非终极符部分*/ 
-           TmlType tmlvar;       /*终极符部分*/
-         } var;   
 
-   /*指向下一个节点的指针*/
-   struct Node *underNode;
 
-}  StackNode;
+///*实现LL1分析用的分析栈，存放的是终极符和非终极符 */
+//typedef struct Node
+//{  /*内容标志*/
+//   int flag;    /* flag为1，表示栈中内容为非终极符；*/
+//                /* flag为2，表示栈中内容为终极符    */
+//   /*内容*/
+//   union { NType Ntmlvar ;  /*非终极符部分*/
+//           TType tmlvar;       /*终极符部分*/
+//         } var;
+//
+//   /*指向下一个节点的指针*/
+//   struct Node *underNode;
+//
+//}  StackNode;
 
 
 /* 2.创建语法树所需的类型及变量**/
@@ -264,7 +292,7 @@ typedef struct NodeP
 }StackNodeP;
 
 /*符号栈顶指针*/
-extern StackNode *StackTop;
+//extern StackNode *StackTop;
 
 /*栈空标志*/
 extern  int STACKEMPTY; 
@@ -568,18 +596,6 @@ extern  int AddrEMPTY;
 
 
 /********************************************************************/
-/* 源代码文本文件指针source */
-extern FILE *source;
-
-/* 列表输出文件指针listing */
-extern FILE* listing; 
-
-/*词法分析结果Token序列的存储文件指针fp*/
-extern FILE* fp;
-
-/*目标代码文件指针*/
-extern FILE  *code;
-
 /*Token序列中的token数目*/
 extern int Tokennum;
 

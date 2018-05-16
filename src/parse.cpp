@@ -16,6 +16,7 @@ void Parse::run() {
         syntaxError("end before file");
     } else {
         //TODO Success
+        emit parse_success();
     }
 }
 

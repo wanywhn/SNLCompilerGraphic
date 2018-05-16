@@ -30,7 +30,9 @@ SOURCES += \
     src/lex.cpp \
     src/lexscene.cpp \
     src/parse.cpp \
-    src/utils.cpp
+    src/utils.cpp \
+    src/parsescene.cpp \
+    src/ll1_parse.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -39,7 +41,9 @@ HEADERS += \
     src/globals.h \
     src/parse.h \
     src/utils.h \
-    src/globals.h
+    src/globals.h \
+    src/parsescene.h \
+    src/ll1_parse.h
 
 FORMS += \
         src/mainwindow.ui

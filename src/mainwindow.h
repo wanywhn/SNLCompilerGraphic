@@ -3,6 +3,7 @@
 
 #include "lex.h"
 #include "lexscene.h"
+#include "parsescene.h"
 
 #include <QLabel>
 #include <QListWidget>
@@ -38,7 +39,7 @@ private:
     QPlainTextEdit *editer_left;
     QTabWidget *tab_center_widget;
     LexScene *lexscene;
-    QGraphicsView *parseView;
+    ParseScene *parseScene;
     QVBoxLayout *layout_right;
     QHBoxLayout *layout_left;
     QHBoxLayout *layout;

@@ -20,18 +20,22 @@ MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::init_ui() {
 
+    this->setMinimumWidth(800);
+    this->setMinimumHeight(600);
     auto leftsplitter=new QSplitter(Qt::Horizontal);
 
   editer_left = new QPlainTextEdit(leftsplitter);
   tab_center_widget = new QTabWidget(leftsplitter);
   // TODO Add tabview
   lexscene=new LexScene();
-  parseView=new QGraphicsView();
+  parseScene=new ParseScene();
 
   auto view=new QGraphicsView(tab_center_widget);
   view->setScene(lexscene);
+  auto pview=new QGraphicsView(tab_center_widget);
+  pview->setScene(parseScene);
   tab_center_widget->addTab(view,QString(tr("LEX")));
-  tab_center_widget->addTab(parseView,QString(tr("Parse")));
+  tab_center_widget->addTab(pview,QString(tr("Parse")));
 
 
 
@@ -50,7 +54,7 @@ void MainWindow::init_ui() {
   label_current_line->setText("EMPTY");
 
   listwidget_token = new QListWidget(rightsplitter);
-  listwidget_token->setMaximumWidth(200);
+  listwidget_token->setMinimumWidth(230);
 
     this->setCentralWidget(leftsplitter);
 
@@ -114,7 +118,7 @@ void MainWindow::idbuff_changed(QString str) {
 
 void MainWindow::token_get(Token *token)
 {
-    QString str("Line:%1\tLex:%2\tSem:%3");
+    QString str("Line:%1\tLex:%2\t\tSem:%3");
     QString item=str.arg(token->getLine()).arg(token->getLexName()).arg(token->getSem());
     listwidget_token->addItem(item);
 
@@ -123,6 +127,9 @@ void MainWindow::token_get(Token *token)
 void MainWindow::re_parse()
 {
      auto re=Parse::getInstance(lex->getTokenList());
+     connect(re,&Parse::parse_success,[this,re](){
+         parseScene->show_parsetree(re->get_parsetree_head());
+     });
      re->start();
 
 }

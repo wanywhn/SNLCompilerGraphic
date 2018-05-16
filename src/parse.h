@@ -17,7 +17,14 @@ public:
     }
 
     void set_token_head(Token *head);
+    TreeNode * get_parsetree_head(){
+        return root;
+    }
 
+
+
+signals:
+    void parse_success();
 private:
     Parse();
 

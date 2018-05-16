@@ -11,6 +11,7 @@
 class utils {
 
 };
+TreeNode *newSpecNode(NodeKind kind);
 
 TreeNode *newTypeNode();
 
