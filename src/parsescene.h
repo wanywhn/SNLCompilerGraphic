@@ -11,6 +11,10 @@ class ParseScene : public QGraphicsScene
 public:
     ParseScene();
     void show_parsetree(TreeNode *root);
+
+
+private:
+    QString getName(TreeNode *node);
 };
 
 #endif // PARSESCENE_H

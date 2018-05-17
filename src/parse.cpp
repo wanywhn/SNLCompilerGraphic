@@ -49,7 +49,7 @@ void Parse::syntaxError(QString msg) {
 }
 
 void Parse::match(LexType expected) {
-    if (head->getLex() == expected) {
+    if (nullptr!=head&&head->getLex() == expected) {
         head = head->next;
         line0 = head->getLine();
         lineno=line0;

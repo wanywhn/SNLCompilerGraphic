@@ -32,7 +32,8 @@ SOURCES += \
     src/parse.cpp \
     src/utils.cpp \
     src/parsescene.cpp \
-    src/ll1_parse.cpp
+    src/ll1_parse.cpp \
+    src/parseitem.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS += \
     src/utils.h \
     src/globals.h \
     src/parsescene.h \
-    src/ll1_parse.h
+    src/ll1_parse.h \
+    src/parseitem.h
 
 FORMS += \
         src/mainwindow.ui

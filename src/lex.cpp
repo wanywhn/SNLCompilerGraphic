@@ -84,7 +84,7 @@ bool Lex::isnum(char c) { return (c >= (0 + '0') && c <= (9 + '0')); }
 
 bool Lex::issinglesep(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' ||
-         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ','||c==' ';
+         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ',';
 }
 
 Token *Lex::getsinglesep(char c) {

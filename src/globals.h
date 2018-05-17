@@ -81,7 +81,7 @@ typedef enum
     FieldVarMore,   CmpOp,			AddOp,          MultOp
 } LexType;
 
-extern QMap<LexType,QString> lexName;
+extern QMap<LexType, QString> lexName;
 
 /*********** 单词的类型，包括词法信息和语义信息 ************/
 //typedef struct tokenType
