@@ -122,13 +122,14 @@ private:
 typedef enum {ProK,PheadK,DecK,TypeK,VarK,ProcDecK,StmLK,StmtK,ExpK}
               NodeKind;
 
+extern QMap<NodeKind,QString> nodekind_map;
 
 /*声明类型Deckind 类型的枚举定义：
   数组类型ArrayK,字符类型CharK,
   整数类型IntegerK,记录类型RecordK,
   以类型标识符作为类型的IdK*/ 
 typedef enum {ArrayK,CharK,IntegerK,RecordK,IdK}  DecKind;
-
+extern QMap<DecKind,QString> deckind_map;
 
 
 /* 语句类型StmtKind类型的枚举定义:			*
@@ -136,25 +137,30 @@ typedef enum {ArrayK,CharK,IntegerK,RecordK,IdK}  DecKind;
  * 赋值类型AssignK,读类型ReadK              *
  * 写类型WriteK，函数调用类型CallK          */
 typedef enum {IfK,WhileK,AssignK,ReadK,WriteK,CallK,ReturnK} StmtKind;
+extern QMap<StmtKind,QString> stmtkind_map;
 
 
 /* 表达式类型ExpKind类型的枚举定义:         *
  * 操作类型OpK,常数类型ConstK,变量类型VarK */
 typedef enum {OpK,ConstK,VariK} ExpKind;
+extern QMap<ExpKind,QString> expkind_map;
 
 
 /* 变量类型VarKind类型的枚举定义:           *
  * 标识符IdV,数组成员ArrayMembV,域成员FieldMembV*/
 typedef enum {IdV,ArrayMembV,FieldMembV} VarKind; 
+extern QMap<VarKind,QString> varkind_map;
 
 
 /* 类型检查ExpType类型的枚举定义:           *
  * 空Void,整数类型Integer,字符类型Char      */ 
 typedef enum {Void,Integer,Boolean} ExpType;
+extern QMap<ExpType,QString> exptype_map;
 
 /* 参数类型ParamType类型的枚举定义：        *
  * 值参valparamType,变参varparamType        */
 typedef enum {valparamType,varparamType} ParamType; 
+extern QMap<ParamType,QString> paramtype_map;
 
 /* 定义语法树节点的最大子节点数MAXCHILDRREN为3 */
 /* 过程声明部分的子节点child[0]指向参数部分，
@@ -186,7 +192,8 @@ typedef struct treeNode
 
 	 struct symbtable * table[10]; /* 与标志符对应的符号表地址，在语义分析阶段填入*/  
 
-	 struct 
+      char type_name[10];             /* 类型名是标识符  */
+     struct
 	 {
 		struct
 			{	
@@ -208,7 +215,6 @@ typedef struct treeNode
 				ExpType type;         /* 用于类型检查  */
 			}ExpAttr;	              /* 表达式属性    */
 
-      char type_name[10];             /* 类型名是标识符  */      
              
 	 } attr;                          /* 属性	       */
 }TreeNode;
@@ -257,21 +263,6 @@ extern QSet<LexType> TTSet;
 
 
 
-
-///*实现LL1分析用的分析栈，存放的是终极符和非终极符 */
-//typedef struct Node
-//{  /*内容标志*/
-//   int flag;    /* flag为1，表示栈中内容为非终极符；*/
-//                /* flag为2，表示栈中内容为终极符    */
-//   /*内容*/
-//   union { NType Ntmlvar ;  /*非终极符部分*/
-//           TType tmlvar;       /*终极符部分*/
-//         } var;
-//
-//   /*指向下一个节点的指针*/
-//   struct Node *underNode;
-//
-//}  StackNode;
 
 
 /* 2.创建语法树所需的类型及变量**/

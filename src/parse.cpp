@@ -1,6 +1,7 @@
 #include "parse.h"
 #include "globals.h"
 #include "utils.h"
+#include <QDebug>
 
 void Parse::set_token_head(Token *head) {
     this->head = head;
@@ -29,7 +30,7 @@ TreeNode *Parse::program() {
     TreeNode *dp = declarePart();
     TreeNode *pb = programBody();
 
-    TreeNode *root = newRootNode();
+    root = newRootNode();
     if (nullptr != root) {
         root->lineno = 0;
         if (nullptr != ph) root->child[0] = ph;
@@ -45,16 +46,20 @@ TreeNode *Parse::program() {
 
 void Parse::syntaxError(QString msg) {
 
+    qDebug()<<msg;
     //TODO show the msg
 }
 
 void Parse::match(LexType expected) {
     if (nullptr!=head&&head->getLex() == expected) {
         head = head->next;
+        if(head!=nullptr){
         line0 = head->getLine();
         lineno=line0;
+
+        }
     } else {
-        syntaxError("ERROR not match");
+        syntaxError("ERROR not match,except:"+lexName[expected]+" get:"+lexName[head->getLex()]+" in line "+head->getLine());
         exit(0);
     }
 
@@ -70,8 +75,10 @@ TreeNode *Parse::programHead() {
     if ((nullptr != t) && (head->getLex() == ID)) {
         t->lineno = 0;
         strcpy(t->name[0], head->getSem().toStdString().c_str());
-    }
     match(ID);
+    }else{
+        syntaxError("need a program name"+lineno);
+    }
     return t;
 }
 
@@ -95,7 +102,7 @@ TreeNode *Parse::declarePart() {
     }
     TreeNode *varp = newDecANode(VarK);
     if (nullptr != varp) {
-        varp->lineno = 0;
+        varp->lineno = 0;//TODO lineno??
         TreeNode *tp2 = varDec();
         if (nullptr != tp2)
             varp->child[0] = tp2;
@@ -210,7 +217,7 @@ void Parse::typeName(TreeNode *pNode) {
                 break;
             case ID:
                 pNode->kind.dec = IdK;
-                strcpy(pNode->attr.type_name, head->getSem().toStdString().c_str());
+                strcpy(pNode->type_name, head->getSem().toStdString().c_str());
                 match(ID);
                 break;
             default :
@@ -329,7 +336,7 @@ TreeNode *Parse::fieldDecList() {
             p = fieldDecMore();
             break;
         default :
-            head = head->next;
+        //    head = head->next;
             syntaxError("unexpected token");
             break;
     }
@@ -364,7 +371,7 @@ void Parse::idMore(TreeNode *pNode) {
             idList(pNode);
             break;
         default :
-            head = head->next;
+        //    head = head->next;
             syntaxError("unexpected token");
             break;
     }
@@ -385,7 +392,7 @@ TreeNode *Parse::fieldDecMore() {
             p = fieldDecList();
             break;
         default :
-            head = head->next;
+        //    head = head->next;
             syntaxError("unexpected token");
             break;
     }
@@ -408,7 +415,7 @@ TreeNode *Parse::typeDecMore() {
             break;
 
         default:
-            head = head->next;
+          //  head = head->next;
             syntaxError("unexpected token");
             break;
     }
@@ -427,8 +434,8 @@ TreeNode *Parse::varDec() {
             t = varDeclaration();
             break;
         default:
-            head = head->next;
-            syntaxError("unexpected token is here!");
+            //head = head->next;
+            syntaxError("unexpected token is here! "+lexName[head->getLex()]+head->getLine());
             break;
     }
     return t;
@@ -483,7 +490,7 @@ TreeNode *Parse::varDecMore() {
             t = varDecList();
             break;
         default:
-            head = head->next;
+      //      head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -499,7 +506,7 @@ void Parse::varIdList(TreeNode *t) {
         t->idnum = (t->idnum) + 1;
     } else {
         syntaxError("a varid is expected here!");
-        head = head->next;
+   //     head = head->next;
     }
     varIdMore(t);
 }
@@ -517,7 +524,7 @@ void Parse::varIdMore(TreeNode *t) {
             varIdList(t);
             break;
         default:
-            head = head->next;
+    //        head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -565,7 +572,7 @@ TreeNode *Parse::stmMore() {
             t = stmList();
             break;
         default:
-            head = head->next;
+      //      head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -605,7 +612,7 @@ TreeNode *Parse::stm() {
             t = assCall();
             break;
         default:
-            head = head->next;
+      //      head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -628,7 +635,7 @@ TreeNode *Parse::assCall() {
             t = callStmRest();
             break;
         default:
-            head = head->next;
+     //       head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -788,7 +795,7 @@ TreeNode *Parse::actParamList() {
                 t->sibling = actParamMore();
             break;
         default:
-            head = head->next;
+    //        head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -809,7 +816,7 @@ TreeNode *Parse::actParamMore() {
             t = actParamList();
             break;
         default:
-            head = head->next;
+      //      head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
@@ -902,7 +909,7 @@ TreeNode *Parse::procDec() {
             t = procDeclaration();
             break;
         default:
-            head = head->next;
+            //head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }

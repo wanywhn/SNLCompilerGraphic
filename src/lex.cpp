@@ -63,6 +63,11 @@ QMap<QString, LexType> reservedWords = {
     {"write", WRITE},     {"return", RETURN},
     {"integer", INTEGER_T},
 };
+QMap<char, LexType> map = {{'+', PLUS},   {'-', MINUS},     {'*', TIMES},
+                             {'/', DIVIDE}, {'(', LPAREN},    {')', RPAREN},
+                             {';', SEMI},   {'[', LMIDPAREN}, {']', RMIDPAREN},
+                             {'=', EQ},     {'<', LT},        {',', COMMA},
+                             {EOF,ENDFILE}};
 
 void Lex::setFileName(QString filename) {
   this->filename= std::move(filename);
@@ -84,14 +89,10 @@ bool Lex::isnum(char c) { return (c >= (0 + '0') && c <= (9 + '0')); }
 
 bool Lex::issinglesep(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' ||
-         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ',';
+         c == ';' || c == '[' || c == ']' || c == '=' || c == '<' || c == ',' ||c==EOF;
 }
 
 Token *Lex::getsinglesep(char c) {
-  QMap<char, LexType> map = {{'+', PLUS},   {'-', MINUS},     {'*', TIMES},
-                             {'/', DIVIDE}, {'(', LPAREN},    {')', RPAREN},
-                             {';', SEMI},   {'[', LMIDPAREN}, {']', RMIDPAREN},
-                             {'=', EQ},     {'<', LT},        {',', COMMA}};
   Token *tmp = new Token(line_number, map[c], lexName[map[c]]);
 
   return tmp;
@@ -293,6 +294,11 @@ void Lex::run()
         }
       }
     }
+
+
+        Token *tmp = getsinglesep(EOF);
+        current->next = tmp;
+        current = tmp;
 }
 
 void Lex::set_speed(int speed) {

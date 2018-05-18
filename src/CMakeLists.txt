@@ -13,7 +13,7 @@ file(GLOB_RECURSE SOURCES   "*.cpp")
 file(GLOB_RECURSE HEADERS   "*.h")
 file(GLOB_RECURSE FORMS     "*.ui")
 file(GLOB_RECURSE RESOURCES "*.qrc")
-find_package(PkgConfig REQUIRED)
+#find_package(PkgConfig REQUIRED)
 set(QTPKG Core Gui Widgets)
 find_package(Qt5 REQUIRED ${QTPKG})
 

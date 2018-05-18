@@ -37,8 +37,8 @@ protected:
 private:
     Token *head;
     TreeNode *root;
-    int line0;
     QString temp_name;
+    int line0;
 
     void syntaxError(QString msg);
 

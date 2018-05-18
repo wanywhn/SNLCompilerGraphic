@@ -103,6 +103,7 @@ TreeNode *newSpecNode(NodeKind kind)
     t->sibling = nullptr;
     t->nodekind = kind;
     t->lineno = lineno;
+    t->idnum=0;
     for (i = 0; i < 10; i++) {
         strcpy(t->name[i], "\0");
         t->table[i] = nullptr;

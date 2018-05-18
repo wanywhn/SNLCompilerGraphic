@@ -11,8 +11,20 @@ public:
 
     // QGraphicsItem interface
 public:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QGraphicsItem *myparent;
+    int cengshu;
+
+    // QGraphicsItem interface
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+
+    // QGraphicsItem interface
+public:
+    QPainterPath shape() const override;
 };
 
 #endif // PARSEITEM_H

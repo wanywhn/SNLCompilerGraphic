@@ -15,6 +15,10 @@ public:
 
 private:
     QString getName(TreeNode *node);
+
+    // QGraphicsScene interface
+protected:
+    void dragMoveEvent(QGraphicsSceneDragDropEvent *event) override;
 };
 
 #endif // PARSESCENE_H
