@@ -65,9 +65,9 @@ ParseScene::ParseScene()
 
 void ParseScene::show_parsetree(QSharedPointer<TreeNode> root, QString text)
 {
-    for(auto i:this->items()){
-        this->removeItem(i);
-    }
+//    for(auto i:this->items()){
+//        this->removeItem(i);
+//    }
     this->clear();
     auto tt=addText(text);
     tt->moveBy(400,0);
@@ -113,10 +113,10 @@ void ParseScene::show_parsetree(QSharedPointer<TreeNode> root, QString text)
         this->addItem(item);
         item->setPos(QPoint(500+(qrand()%500),0));
 
-                auto coll=this->collidingItems(item,Qt::IntersectsItemBoundingRect);
-                while(!coll.empty()){
-                    item->moveBy(0,qrand()%100);
-                }
+               // auto coll=this->collidingItems(item,Qt::IntersectsItemBoundingRect);
+               // while(!coll.empty()){
+               //     item->moveBy(0,qrand()%100);
+               // }
 
 
         line=new QGraphicsLineItem(QLine(QPoint(0,0),item->pos().toPoint()));
@@ -135,9 +135,9 @@ void ParseScene::show_parsetree(QSharedPointer<TreeNode> root, QString text)
                 this->addItem(item);
                 item->setPos(QPoint(-300+(qrand()%400)+i*500,180+(qrand()%400)));
 
-                while(!item->collidingItems(Qt::IntersectsItemBoundingRect).isEmpty()){
-                    item->moveBy(0,qrand()%50);
-                }
+               // while(!item->collidingItems(Qt::IntersectsItemBoundingRect).isEmpty()){
+               //     item->moveBy(0,qrand()%50);
+               // }
                 line=new QGraphicsLineItem(QLine(QPoint(0,0), item->pos().toPoint()));
                 this->addItem(line);
                 line->setPos(item->myparent->scenePos());

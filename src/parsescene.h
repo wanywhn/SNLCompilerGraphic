@@ -10,6 +10,9 @@ class ParseScene : public QGraphicsScene
 {
 public:
     ParseScene();
+
+
+    public slots:
     void show_parsetree(QSharedPointer<TreeNode> root, QString text);
 
 

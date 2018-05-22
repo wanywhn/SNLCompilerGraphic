@@ -429,7 +429,7 @@ void LL1_parse::run() {
       }
   }
 
-  emit parse_success();
+  emit parse_success(QSharedPointer<TreeNode>(root),"LL1");
 }
 
 void LL1_parse::process(int id)

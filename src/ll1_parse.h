@@ -26,8 +26,8 @@ class LL1_parse:public QThread
     Q_OBJECT
 public:
 
-    static  QSharedPointer<LL1_parse> getInstance(const Token *head){
-        auto instance=QSharedPointer<LL1_parse> (new LL1_parse(head));
+    static LL1_parse *getInstance(const Token *head){
+        auto instance= new LL1_parse(head);
         return instance;
     }
     TreeNode *get_parsetree_head();
@@ -36,7 +36,7 @@ protected:
     void run() override;
 
 signals:
-    void parse_success();
+    void parse_success(QSharedPointer<TreeNode> p,QString title);
 
 
 private:

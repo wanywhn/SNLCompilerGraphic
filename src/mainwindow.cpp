@@ -59,6 +59,10 @@ void MainWindow::init_ui() {
 
     this->setCentralWidget(leftsplitter);
 
+  /**
+   * FileMenu
+   */
+
   auto openfile = new QAction(QString(tr("打开源代码")), this->menuBar());
   auto filemenu = this->menuBar()->addMenu(tr("&File"));
   filemenu->addAction(openfile);
@@ -73,6 +77,9 @@ void MainWindow::init_ui() {
   auto exit = filemenu->addAction(tr("Exit"));
   connect(exit, &QAction::triggered, []() { qApp->exit(); });
 
+  /**
+   * LexMenu
+   */
   auto menu_lex=this->menuBar()->addMenu("LEX");
 
   menu_lex->addSeparator();
@@ -92,15 +99,19 @@ void MainWindow::init_ui() {
 
   auto action_lex=menu_lex->addAction("Lex");
   connect(action_lex, &QAction::triggered, [this]() {
-  lex = Lex::getInstance(filename);
-  connect(lex, &Lex::charget, this, &MainWindow::char_changed);
-  connect(lex, &Lex::idbuff_changed, this, &MainWindow::idbuff_changed);
-  connect(lex,&Lex::token_get,this,&MainWindow::token_get);
-  connect(lex,&Lex::go_path,lexscene,&LexScene::show_path);
+      listwidget_token->clear();
+  lex = Lex::getInstance(editer_left->document());
+  connect(lex, &Lex::charget, this, &MainWindow::char_changed,Qt::ConnectionType::UniqueConnection);
+  connect(lex, &Lex::idbuff_changed, this, &MainWindow::idbuff_changed,Qt::ConnectionType::UniqueConnection);
+  connect(lex,&Lex::token_get,this,&MainWindow::token_get,Qt::ConnectionType::UniqueConnection);
+  connect(lex,&Lex::go_path,lexscene,&LexScene::show_path,Qt::ConnectionType::UniqueConnection);
   lex->start();
 
   });
 
+  /**
+   * SyntaxMenu
+   */
 
   auto action_parse=this->menuBar()->addMenu(tr("Parse"));
   auto re=action_parse->addAction(tr("re"));
@@ -129,9 +140,7 @@ void MainWindow::token_get(Token *token)
 void MainWindow::re_parse()
 {
      auto re=Parse::getInstance(lex->getTokenList());
-     connect(re.data(),&Parse::parse_success,[this,re](){
-         parseScene->show_parsetree(QSharedPointer<TreeNode>(re->get_parsetree_head()),"递归下降");
-     });
+     connect(re,&Parse::parse_success,parseScene,&ParseScene::show_parsetree,Qt::ConnectionType::UniqueConnection);
      re->start();
 
 }
@@ -139,9 +148,7 @@ void MainWindow::re_parse()
 void MainWindow::ll1_parse()
 {
     auto ll1=LL1_parse::getInstance(lex->getTokenList());
-    connect(ll1.data(),&LL1_parse::parse_success,[this,ll1](){
-        parseScene->show_parsetree(QSharedPointer<TreeNode>(ll1->get_parsetree_head()),"LL1");
-    });
+    connect(ll1,&LL1_parse::parse_success,parseScene,&ParseScene::show_parsetree,Qt::ConnectionType::UniqueConnection);
     ll1->start();
 
 }

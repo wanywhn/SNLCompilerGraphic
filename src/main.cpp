@@ -9,5 +9,6 @@ int main(int argc, char *argv[])
     w.show();
 
     qRegisterMetaType<QVector<QPair<int,int>>>("QVector<QPair<int,int>>");
+    qRegisterMetaType<QSharedPointer<TreeNode>>("QSharedPointer<TreeNode>");
     return a.exec();
 }

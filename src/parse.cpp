@@ -11,7 +11,7 @@ void Parse::run() {
         syntaxError("end before file");
     } else {
         //TODO Success
-        emit parse_success();
+        emit parse_success(QSharedPointer<TreeNode>(root),"递归下降");
     }
 }
 

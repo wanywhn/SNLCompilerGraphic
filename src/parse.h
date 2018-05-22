@@ -11,8 +11,8 @@ class Parse : public QThread {
 Q_OBJECT
 
 public:
-    static QSharedPointer<Parse> getInstance(const Token *root) {
-        auto tmp =QSharedPointer<Parse>( new Parse(root));
+    static Parse *getInstance(const Token *root) {
+        auto tmp = new Parse(root);
         return tmp;
     }
 
@@ -23,7 +23,7 @@ public:
 
 
 signals:
-    void parse_success();
+    void parse_success(QSharedPointer<TreeNode>,QString);
 private:
     Parse(const Token *root);
 

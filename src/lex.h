@@ -7,6 +7,7 @@
 #include <utility>
 #include "globals.h"
 #include <QPair>
+#include <QTextDocument>
 #include <QVector>
 
 //enum LexType{
@@ -38,14 +39,13 @@ class Lex : public QThread
 {
     Q_OBJECT
 public:
-    static Lex * getInstance(QString filename){
+    static Lex * getInstance(QTextDocument *doc){
         static auto *lex=new Lex();
-        lex->setFileName(std::move(filename));
+        lex->doc=doc;
         lex->set_speed(300);
         return lex;
 
     }
-    void setFileName(QString filename);
     const Token * getTokenList();
     void set_speed(int speed);
 
@@ -65,12 +65,12 @@ public slots:
 
 
 private:
+    QTextDocument *doc;
     QTextStream ins;
     double intBuff;
     QString idBuff;
     Token *current;
     Token *head;
-    QString filename;
     int line_number;
     int sleep_time;
 private:

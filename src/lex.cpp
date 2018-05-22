@@ -69,9 +69,6 @@ QMap<char, LexType> map = {{'+', PLUS},   {'-', MINUS},     {'*', TIMES},
                              {'=', EQ},     {'<', LT},        {',', COMMA},
                              {EOF,ENDFILE}};
 
-void Lex::setFileName(QString filename) {
-  this->filename= std::move(filename);
-}
 
 const Token *Lex::getTokenList() {
     if(ERROR==head->getLex()){
@@ -112,9 +109,11 @@ Token *Lex::lookup(QString str) {
 
 void Lex::run()
 {
-    auto file = new QFile(filename);
-    file->open(QIODevice::ReadOnly);
-    ins.setDevice(file);
+    auto str=new QString(doc->toRawText());
+    ins.setString(str);
+    ins.seek(0);
+    line_number=0;
+
 
     head = new Token(0, ERROR, "");
     current = head;
@@ -291,6 +290,7 @@ void Lex::run()
         }
         default: {
 
+            qDebug()<<"unexpected char:"<<lookhead<<" in line:"<<line_number;
             emit go_path({{0,38},{38,40},{40,41}});
         }
         }
