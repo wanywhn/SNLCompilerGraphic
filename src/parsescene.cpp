@@ -4,23 +4,74 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneDragDropEvent>
 #include <QQueue>
-QMap<NodeKind,QString> nodekind_map={
-    {ProK,"Prok"},
+
+
+
+QMap<NodeKind,QString> nodekind_map ={
+{ProK,"ProK"},
+{PheadK,"PheadK"},
+{DecK,"DecK"},
+{TypeK,"TypeK"},
+{VarK,"VarK"},
+{ProcDecK,"ProcDecK"},
+{StmLK,"StmLK"},
+{StmtK,"StmtK"},
+{ExpK,"ExpK"},
+};
+QMap<DecKind,QString> deckind_map={
+{ArrayK,"ArrayK"},
+{CharK,"CharK"},
+{IntegerK,"IntegerK"},
+{RecordK,"RecordK"},
+{IdK,"IdK"},
+};
+QMap<StmtKind,QString> stmtkind_map={
+{IfK,"IfK"},
+{WhileK,"WhileK"},
+{AssignK,"AssignK"},
+{ReadK,"ReadK"},
+{WriteK,"WriteK"},
+{CallK,"CallK"},
+{ReturnK,"ReturnK"},
+};
+QMap<ExpKind,QString> expkind_map={
+{OpK,"OpK"},
+{ConstK,"ConstK"},
+{VariK,"VariK"},
+};
+QMap<VarKind,QString> varkind_map={
+{IdV,"IdV"},
+{ArrayMembV,"ArrayMembV"},
+{FieldMembV,"FieldMembV"},
+};
+QMap<ExpType,QString> exptype_map={
+{Void,"Void"},
+{Integer,"Integer"},
+{Boolean,"Boolean"},
+};
+QMap<ParamType,QString> paramtype_map={
+{valparamType,"valparamType"},
+{varparamType,"varparamType"},
 };
 
-QMap<DecKind,QString> deckind_map;
-QMap<StmtKind,QString> stmtkind_map;
-QMap<ExpKind,QString> expkind_map;
-QMap<VarKind,QString> varkind_map;
-QMap<ExpType,QString> exptype_map;
-QMap<ParamType,QString> paramtype_map;
+
+
+
+
 ParseScene::ParseScene()
 {
 
 }
 
-void ParseScene::show_parsetree(TreeNode *root)
+void ParseScene::show_parsetree(QSharedPointer<TreeNode> root, QString text)
 {
+    for(auto i:this->items()){
+        this->removeItem(i);
+    }
+    this->clear();
+    auto tt=addText(text);
+    tt->moveBy(400,0);
+    tt->setTextWidth(12);
 
     if(root->nodekind!=ProK){
         //TODO ERROR
@@ -28,7 +79,7 @@ void ParseScene::show_parsetree(TreeNode *root)
     QQueue<TreeNode  *> queue;
     QQueue<ParseItem*> iqueue;
 
-    auto item=new ParseItem(getName(root));
+    auto item=new ParseItem(getName(root.data()));
     this->addItem(item);
 
     bool deep=false;
@@ -39,7 +90,7 @@ void ParseScene::show_parsetree(TreeNode *root)
             item=new ParseItem(getName(root->child[i]),parent);
             item->cengshu=0;
             this->addItem(item);
-            item->setPos(QPoint(-100+i*150,100+(qrand()%100)));
+            item->setPos(QPoint(-100+i*150+(qrand()%100),100+(qrand()%100)));
 
             line=new QGraphicsLineItem(QLine(item->myparent->scenePos().toPoint(),item->scenePos().toPoint()));
             this->addItem(line);
@@ -60,11 +111,11 @@ void ParseScene::show_parsetree(TreeNode *root)
 
         item=new ParseItem(getName(node->sibling),parent);
         this->addItem(item);
-        item->setPos(QPoint(500+(qrand()%100),0));
+        item->setPos(QPoint(500+(qrand()%500),0));
 
                 auto coll=this->collidingItems(item,Qt::IntersectsItemBoundingRect);
                 while(!coll.empty()){
-                    item->moveBy(0,qrand()%50);
+                    item->moveBy(0,qrand()%100);
                 }
 
 
@@ -82,7 +133,7 @@ void ParseScene::show_parsetree(TreeNode *root)
                 item=new ParseItem(getName(node->child[i]),parent);
                 item->cengshu=parent->cengshu+1;
                 this->addItem(item);
-                item->setPos(QPoint(-150+(qrand()%100)+i*200,180+(qrand()%100)));
+                item->setPos(QPoint(-300+(qrand()%400)+i*500,180+(qrand()%400)));
 
                 while(!item->collidingItems(Qt::IntersectsItemBoundingRect).isEmpty()){
                     item->moveBy(0,qrand()%50);
@@ -102,7 +153,7 @@ void ParseScene::show_parsetree(TreeNode *root)
 
 }
 
-QString ParseScene::getName(TreeNode *node)
+QString ParseScene::getName(const TreeNode *node)
 {
     switch (node->nodekind) {
     case ProK:
@@ -114,7 +165,7 @@ QString ParseScene::getName(TreeNode *node)
     case VarK:
         return "VarK";
     case ProcDecK:
-        return "ProcDeck:"+QString(node->name[2])+"of Type "+paramtype_map[node->attr.ProcAttr.paramt];
+        return "ProcDeck:"+QString(node->name[2])+" of Type "+paramtype_map[node->attr.ProcAttr.paramt];
     case StmLK:
         return "StmLK: ";
     case DecK:
@@ -171,7 +222,7 @@ QString ParseScene::getName(TreeNode *node)
             break;
         }
     default:
-        break;
+            return "ERROR";
     }
 
 
@@ -180,6 +231,7 @@ QString ParseScene::getName(TreeNode *node)
 
     }
 
+        return "ERROR";
 }
 
 void ParseScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)

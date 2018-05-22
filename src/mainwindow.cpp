@@ -1,4 +1,5 @@
 #include "lexscene.h"
+#include "ll1_parse.h"
 #include "mainwindow.h"
 #include "parse.h"
 #include "ui_mainwindow.h"
@@ -32,7 +33,7 @@ void MainWindow::init_ui() {
 
   auto view=new QGraphicsView(tab_center_widget);
   view->setScene(lexscene);
-  auto pview=new QGraphicsView(tab_center_widget);
+  pview=new QGraphicsView(tab_center_widget);
   pview->setScene(parseScene);
   tab_center_widget->addTab(view,QString(tr("LEX")));
   tab_center_widget->addTab(pview,QString(tr("Parse")));
@@ -100,11 +101,12 @@ void MainWindow::init_ui() {
 
   });
 
+
   auto action_parse=this->menuBar()->addMenu(tr("Parse"));
   auto re=action_parse->addAction(tr("re"));
   connect(re,&QAction::triggered,this,&MainWindow::re_parse);
   auto LL1=action_parse->addAction(tr("LL1"));
-  connect(LL1,&QAction::triggered,this,&MainWindow::LL1_parse);
+  connect(LL1,&QAction::triggered,this,&MainWindow::ll1_parse);
   ins = new QTextStream();
 }
 
@@ -127,14 +129,19 @@ void MainWindow::token_get(Token *token)
 void MainWindow::re_parse()
 {
      auto re=Parse::getInstance(lex->getTokenList());
-     connect(re,&Parse::parse_success,[this,re](){
-         parseScene->show_parsetree(re->get_parsetree_head());
+     connect(re.data(),&Parse::parse_success,[this,re](){
+         parseScene->show_parsetree(QSharedPointer<TreeNode>(re->get_parsetree_head()),"递归下降");
      });
      re->start();
 
 }
 
-void MainWindow::LL1_parse()
+void MainWindow::ll1_parse()
 {
+    auto ll1=LL1_parse::getInstance(lex->getTokenList());
+    connect(ll1.data(),&LL1_parse::parse_success,[this,ll1](){
+        parseScene->show_parsetree(QSharedPointer<TreeNode>(ll1->get_parsetree_head()),"LL1");
+    });
+    ll1->start();
 
 }

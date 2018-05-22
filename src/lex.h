@@ -46,7 +46,7 @@ public:
 
     }
     void setFileName(QString filename);
-    Token * getTokenList();
+    const Token * getTokenList();
     void set_speed(int speed);
 
 

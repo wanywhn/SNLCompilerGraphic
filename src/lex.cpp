@@ -73,10 +73,12 @@ void Lex::setFileName(QString filename) {
   this->filename= std::move(filename);
 }
 
-Token *Lex::getTokenList() {
+const Token *Lex::getTokenList() {
+    if(ERROR==head->getLex()){
   Token *tmp = head;
   head = head->next;
   delete tmp;
+    };
   return head;
 }
 

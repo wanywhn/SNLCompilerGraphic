@@ -3,13 +3,7 @@
 #include "utils.h"
 #include <QDebug>
 
-void Parse::set_token_head(Token *head) {
-    this->head = head;
-}
 
-Parse::Parse() : root(nullptr), line0(0) {
-
-}
 
 void Parse::run() {
     root = program();
@@ -25,6 +19,11 @@ void Parse::run() {
  * program ::= programHead declarePart programBody
  * @return
  */
+Parse::Parse(const Token *root):head(root)
+{
+
+}
+
 TreeNode *Parse::program() {
     TreeNode *ph = programHead();
     TreeNode *dp = declarePart();

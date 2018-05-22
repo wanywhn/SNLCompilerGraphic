@@ -4,6 +4,7 @@
 #include "globals.h"
 
 #include <QObject>
+#include <QSharedPointer>
 #include <QStack>
 #include <QThread>
 
@@ -24,26 +25,32 @@ class LL1_parse:public QThread
 {
     Q_OBJECT
 public:
-    LL1_parse();
 
-    static LL1_parse *getInstance(Token *head){
-        static LL1_parse *instance=new LL1_parse();
-        instance->head=head;
+    static  QSharedPointer<LL1_parse> getInstance(const Token *head){
+        auto instance=QSharedPointer<LL1_parse> (new LL1_parse(head));
         return instance;
     }
+    TreeNode *get_parsetree_head();
     // QThread interface
 protected:
     void run() override;
 
+signals:
+    void parse_success();
+
 
 private:
+    LL1_parse(const Token *root);
     void createLL1Table();
     void process(int id);
 private:
-    Token *head;
+    const Token *head;
     QMap<QPair<LexType,LexType>,int> table;
-    QStack<LexType> parse_stack;
-    QStack<TreeNode *> tree_stack;
+    QStack<LexType> symbal_stack;
+    QStack<TreeNode **> syntaxtree_stack;
+    QStack<TreeNode *> op_stack;
+    QStack<TreeNode *> num_stack;
+    TreeNode *root;
 };
 
 #endif // LL1_PARSE_H

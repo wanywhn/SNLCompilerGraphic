@@ -38,6 +38,7 @@ private:
     QSplitter *rightsplitter;
     QPlainTextEdit *editer_left;
     QTabWidget *tab_center_widget;
+    QGraphicsView *pview;
     LexScene *lexscene;
     ParseScene *parseScene;
     QVBoxLayout *layout_right;
@@ -59,7 +60,7 @@ public slots:
     void token_get(Token *token);
 
     void re_parse();
-    void LL1_parse();
+    void ll1_parse();
 };
 
 #endif // MAINWINDOW_H

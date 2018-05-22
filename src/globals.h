@@ -31,11 +31,7 @@
 /* SCOPESIZE为符号表scope栈的大小*/
 #define SCOPESIZE 1000
 
-/*定义token的长度*/
-#define TOKENLEN sizeof (TokenType)
 
-/*定义链表节点的长度*/
-#define CHAINNODELEN sizeof (ChainNodeType) 
 
 
 /********************** 单词的词法类型 ********************/
@@ -97,10 +93,10 @@ public:
         this->lex=lex;
         this->sem=sem;
     }
-    int getLine(){return line;}
-    QString getLexName(){return lexName[lex];}
-    LexType getLex(){return lex;}
-    QString getSem(){return sem;}
+    int getLine() const{return line;}
+    QString getLexName() const{return lexName[lex];}
+    LexType getLex() const{return lex;}
+    QString getSem() const{return sem;}
 
     Token *next;
 

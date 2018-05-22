@@ -56,7 +56,7 @@ void LexScene::show_path(QVector<QPair<int, int> > v)
     QPen pen;
     pen.setColor(Qt::red);
     pen.setWidth(3);
-    qDebug()<<v;
+//    qDebug()<<v;
     for(auto item:v){
         auto x=items.at(item.first);
         auto y=items.at(item.second);

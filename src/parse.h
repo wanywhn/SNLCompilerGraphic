@@ -3,6 +3,7 @@
 
 #include "globals.h"
 
+#include <QSharedPointer>
 #include <QThread>
 
 
@@ -10,14 +11,12 @@ class Parse : public QThread {
 Q_OBJECT
 
 public:
-    static Parse *getInstance(Token *head) {
-        static auto *tmp = new Parse();
-        tmp->set_token_head(head);
+    static QSharedPointer<Parse> getInstance(const Token *root) {
+        auto tmp =QSharedPointer<Parse>( new Parse(root));
         return tmp;
     }
 
-    void set_token_head(Token *head);
-    TreeNode * get_parsetree_head(){
+    TreeNode *get_parsetree_head(){
         return root;
     }
 
@@ -26,7 +25,7 @@ public:
 signals:
     void parse_success();
 private:
-    Parse();
+    Parse(const Token *root);
 
     TreeNode *program();
 
@@ -35,7 +34,7 @@ protected:
     void run() override;
 
 private:
-    Token *head;
+    const Token *head;
     TreeNode *root;
     QString temp_name;
     int line0;

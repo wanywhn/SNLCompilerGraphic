@@ -7,11 +7,11 @@
 class ParseItem : public QGraphicsTextItem
 {
 public:
+    ParseItem();
     ParseItem(const QString &text,QGraphicsItem *parent=Q_NULLPTR);
 
     // QGraphicsItem interface
 public:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QGraphicsItem *myparent;
     int cengshu;
 
@@ -25,6 +25,10 @@ protected:
     // QGraphicsItem interface
 public:
     QPainterPath shape() const override;
+
+    // QGraphicsItem interface
+public:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
 #endif // PARSEITEM_H

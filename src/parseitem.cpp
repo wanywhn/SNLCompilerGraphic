@@ -5,6 +5,11 @@
 #include <QCursor>
 
 
+ParseItem::ParseItem():QGraphicsTextItem()
+{
+
+}
+
 ParseItem::ParseItem(const QString &text, QGraphicsItem *parent):QGraphicsTextItem (text,parent)
 {
     myparent=parent;
@@ -12,12 +17,6 @@ ParseItem::ParseItem(const QString &text, QGraphicsItem *parent):QGraphicsTextIt
 
 }
 
-void ParseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QGraphicsTextItem::paint(painter,option,widget);
-    auto rect=boundingRect();
-    painter->drawRect(rect);
-}
 
 void ParseItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -53,4 +52,11 @@ QPainterPath ParseItem::shape() const
     QPainterPath path;
     path.addRect(boundingRect());
     return path;
+}
+
+void ParseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsTextItem::paint(painter,option,widget);
+    auto rect=boundingRect();
+    painter->drawRect(rect);
 }
