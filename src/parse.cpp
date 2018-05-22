@@ -8,11 +8,9 @@
 void Parse::run() {
     root = program();
     if (head->getLex() != ENDFILE) {
-        syntaxError("end before file");
-    } else {
-        //TODO Success
-        emit parse_success(QSharedPointer<TreeNode>(root),"递归下降");
+        syntaxError("end earily in line:"+QString::number(head->getLine()));
     }
+        emit parse_success(QSharedPointer<TreeNode>(root),"递归下降");
 }
 
 /**
@@ -49,17 +47,18 @@ void Parse::syntaxError(QString msg) {
     //TODO show the msg
 }
 
-void Parse::match(LexType expected) {
+bool Parse::match(LexType expected) {
     if (nullptr!=head&&head->getLex() == expected) {
         head = head->next;
         if(head!=nullptr){
         line0 = head->getLine();
         lineno=line0;
 
+        return true;
         }
     } else {
         syntaxError("ERROR not match,except:"+lexName[expected]+" get:"+lexName[head->getLex()]+" in line "+head->getLine());
-        exit(0);
+        return false;
     }
 
 }
@@ -70,14 +69,20 @@ void Parse::match(LexType expected) {
  */
 TreeNode *Parse::programHead() {
     TreeNode *t = newPheadNode();
-    match(PROGRAM);
+    if(!match(PROGRAM))
+        goto e;
     if ((nullptr != t) && (head->getLex() == ID)) {
-        t->lineno = 0;
+        t->lineno = head->getLine();
         strcpy(t->name[0], head->getSem().toStdString().c_str());
-    match(ID);
+    if(!match(ID))
+        goto e;
     }else{
-        syntaxError("need a program name"+lineno);
+        syntaxError("need a program name in line:"+lineno);
     }
+    return t;
+    e:
+    delete t;
+    t=nullptr;
     return t;
 }
 
@@ -142,7 +147,7 @@ TreeNode *Parse::typeDec() {
         case BEGIN:
             break;
         default :
-            syntaxError("unexpected token:" + head->getSem());
+            syntaxError("unexpected token:" + head->getSem()+" in line :"+QString::number(lineno));
             head = head->next;
             break;
     }
@@ -154,10 +159,11 @@ TreeNode *Parse::typeDec() {
  * @return
  */
 TreeNode *Parse::typeDeclaration() {
-    match(TYPE);
+    if(!match(TYPE))
+        syntaxError("Warning :need a declaration");
     auto t = typeDecList();
     if (nullptr == t) {
-        syntaxError("need a declaration");
+        syntaxError("Warning :need a declaration");
     }
     return t;
 
@@ -172,14 +178,22 @@ TreeNode *Parse::typeDecList() {
     if (nullptr != t) {
         t->lineno = line0;
         typeId(t);
-        match(EQ);
+        if(!match(EQ))
+            goto e;
         typeName(t);
-        match(SEMI);
+        if(!match(SEMI))
+            goto e;
         auto *more = typeDecMore();
         if (nullptr != more) {
             t->sibling = more;
         }
     }
+
+    return t;
+
+    e:
+    delete t;
+    t=nullptr;
     return t;
 }
 
@@ -193,6 +207,8 @@ void Parse::typeId(TreeNode *pNode) {
     if (head->getLex() == ID) {
         strcpy(pNode->name[tnum], head->getSem().toStdString().c_str());
         tnum += 1;
+    }else{
+        syntaxError("Type Define need a ID");
     }
     pNode->idnum = tnum;
     match(ID);
@@ -221,7 +237,7 @@ void Parse::typeName(TreeNode *pNode) {
                 break;
             default :
                 head = head->next;
-                syntaxError("unexpected toekn");
+                syntaxError("unexpected Type");
                 break;
         }
     }
@@ -244,7 +260,7 @@ void Parse::baseType(TreeNode *pNode) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected BaseType");
             break;
     }
 
@@ -265,7 +281,7 @@ void Parse::structureType(TreeNode *pNode) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected StructureType");
             break;
     }
 
@@ -336,7 +352,7 @@ TreeNode *Parse::fieldDecList() {
             break;
         default :
         //    head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected Type . Only accept INTEGER CHAR ARRAY");
             break;
     }
     t->sibling = p;
@@ -352,6 +368,8 @@ void Parse::idList(TreeNode *pNode) {
         strcpy(pNode->name[pNode->idnum], head->getSem().toStdString().c_str());
         match(ID);
         pNode->idnum += 1;
+    }else{
+        syntaxError("IDList need an ID but "+lexName[head->getLex()]+" get");
     }
     idMore(pNode);
 
@@ -371,7 +389,7 @@ void Parse::idMore(TreeNode *pNode) {
             break;
         default :
         //    head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected token in idMore");
             break;
     }
 }
@@ -392,7 +410,7 @@ TreeNode *Parse::fieldDecMore() {
             break;
         default :
         //    head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected token "+lexName[head->getLex()]);
             break;
     }
     return p;
@@ -415,7 +433,7 @@ TreeNode *Parse::typeDecMore() {
 
         default:
           //  head = head->next;
-            syntaxError("unexpected token");
+            syntaxError("unexpected token when declare more Type");
             break;
     }
     return p;
@@ -453,9 +471,9 @@ TreeNode *Parse::varDeclaration() {
 }
 
 
-/********************************************************************/
-/* 产生式 < varDecList > ::=  typeName varIdList; varDecMore        */
-/********************************************************************/
+/**
+* 产生式 < varDecList > ::=  typeName varIdList; varDecMore
+**/
 TreeNode *Parse::varDecList() {
     TreeNode *t = newDecNode();
     TreeNode *p = nullptr;
@@ -489,15 +507,14 @@ TreeNode *Parse::varDecMore() {
             t = varDecList();
             break;
         default:
-      //      head = head->next;
             syntaxError("unexpected token is here!");
             break;
     }
     return t;
 }
-/********************************************************************/
-/* 产生式 < varIdList > ::=  id  varIdMore                          */
-/********************************************************************/
+/**
+/* 产生式 < varIdList > ::=  id  varIdMore
+*/
 void Parse::varIdList(TreeNode *t) {
     if (head->getLex() == ID) {
         strcpy(t->name[(t->idnum)], head->getSem().toStdString().c_str());

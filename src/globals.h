@@ -79,12 +79,6 @@ typedef enum
 
 extern QMap<LexType, QString> lexName;
 
-/*********** 单词的类型，包括词法信息和语义信息 ************/
-//typedef struct tokenType
-//    { int     lineshow;
-//	  LexType Lex;
-//      char    Sem[MAXTOKENLEN+1];
-//    } TokenType;
 
 class Token{
 public:
@@ -171,48 +165,48 @@ struct symbtable;
 typedef struct treeNode
 
    { 
-	 struct treeNode * child[MAXCHILDREN];		/* 子节点指针	*/			
-     struct treeNode * sibling;					/* 兄弟节点指针	*/
-     int lineno;								/* 源代码行号	*/
-     NodeKind nodekind;						    /* 节点类型		*/
+     struct treeNode * child[MAXCHILDREN];
+     struct treeNode * sibling;
+     int lineno;
+     NodeKind nodekind;
      union 
 	 {
 		 DecKind  dec;
 	     StmtKind stmt; 
 		 ExpKind  exp; 
-	 } kind;                       /* 具体类型     */
+     } kind;
 
-	 int idnum;                    /* 相同类型的变量个数 */ 
+     int idnum;
 	 
-	 char name[10][10];            /* 标识符的名称  */
+     char name[10][10];
 
-	 struct symbtable * table[10]; /* 与标志符对应的符号表地址，在语义分析阶段填入*/  
+     struct symbtable * table[10];
 
-      char type_name[10];             /* 类型名是标识符  */
+      char type_name[10];
      struct
 	 {
 		struct
 			{	
-				int low;              /* 数组下界     */
-				int up;               /* 数组上界     */
-				DecKind   childtype;  /* 数组的子类型 */
-			}ArrayAttr;               /* 数组属性     */
+                int low;
+                int up;
+                DecKind   childtype;
+            }ArrayAttr;
 	         
 		struct
 			{	
-				ParamType  paramt;     /* 过程的参数类型*/
-			}ProcAttr;                 /* 过程属性      */ 
+                ParamType  paramt;
+            }ProcAttr;
 		
 		struct
 			{
-				LexType op;           /* 表达式的操作符*/						
-				int val;		      /* 表达式的值	   */ 
-				VarKind  varkind;     /* 变量的类别    */
-				ExpType type;         /* 用于类型检查  */
-			}ExpAttr;	              /* 表达式属性    */
+                LexType op;
+                int val;
+                VarKind  varkind;
+                ExpType type;
+            }ExpAttr;
 
              
-	 } attr;                          /* 属性	       */
+     } attr;
 }TreeNode;
 
 /*非终极符的总数*/

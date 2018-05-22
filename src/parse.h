@@ -41,7 +41,7 @@ private:
 
     void syntaxError(QString msg);
 
-    void match(LexType expected);
+    bool match(LexType expected);
 
     TreeNode *programHead();
 

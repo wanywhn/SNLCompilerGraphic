@@ -153,8 +153,20 @@ void ParseScene::show_parsetree(QSharedPointer<TreeNode> root, QString text)
 
 }
 
+QString ParseScene::get_names(const TreeNode *node)
+{
+    QString name;
+    for(auto i=0;i!=node->idnum;++i){
+        name+=node->name[i];
+        name.append(",");
+    };
+
+    return name;
+}
+
 QString ParseScene::getName(const TreeNode *node)
 {
+    QString name;
     switch (node->nodekind) {
     case ProK:
         return "Prok";
@@ -165,7 +177,7 @@ QString ParseScene::getName(const TreeNode *node)
     case VarK:
         return "VarK";
     case ProcDecK:
-        return "ProcDeck:"+QString(node->name[2])+" of Type "+paramtype_map[node->attr.ProcAttr.paramt];
+        return "ProcDeck:"+QString(node->name[0])+" of Type "+paramtype_map[node->attr.ProcAttr.paramt];
     case StmLK:
         return "StmLK: ";
     case DecK:
@@ -176,17 +188,15 @@ QString ParseScene::getName(const TreeNode *node)
         case CharK:
             return "DecK Char";
         case IntegerK:{
-            QString name;
-            for(auto i=0;i!=node->idnum;++i){
-                name+=node->name[i];
-                name.append(",");
-            };
+            name = get_names(node);
             return "DecK IntegerK:"+name;
         }
         case RecordK:
-            return "DecK RecordK";
+            name=get_names(node);
+            return "DecK RecordK:"+name;
         case IdK:
-            return "DecK IdK";
+            name=get_names(node);
+            return "DecK IdK:"+name+" of "+node->type_name;
         }
         break;
     }

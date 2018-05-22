@@ -109,7 +109,7 @@ Token *Lex::lookup(QString str) {
 
 void Lex::run()
 {
-    auto str=new QString(doc->toRawText());
+    auto str=new QString(doc->toPlainText());
     ins.setString(str);
     ins.seek(0);
     line_number=0;

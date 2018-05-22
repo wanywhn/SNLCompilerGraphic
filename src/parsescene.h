@@ -12,7 +12,9 @@ public:
     ParseScene();
 
 
-    public slots:
+    QString get_names(const TreeNode *node);
+
+public slots:
     void show_parsetree(QSharedPointer<TreeNode> root, QString text);
 
 

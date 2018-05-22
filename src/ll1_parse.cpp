@@ -59,6 +59,7 @@ LL1_parse::LL1_parse(const Token *root):head(root) {
         {{Program,PROGRAM},1},
         {{ProgramHead,PROGRAM},2},
         {{ProgramName,ID},3},
+        {{DeclarePart,TYPE},4},
         {{DeclarePart,VAR},4},
         {{DeclarePart,PROCEDURE},4},
         {{DeclarePart,BEGIN},4},
@@ -193,10 +194,12 @@ LL1_parse::LL1_parse(const Token *root):head(root) {
 
 
 
-        {{AssCall,DOT},67},
-        {{AssCall,LPAREN},68},
-        {{AssCall,LMIDPAREN},67},
+        //TODO shushang cuole
         {{AssCall,ASSIGN},67},
+        {{AssCall,DOT},67},
+        {{AssCall,LMIDPAREN},67},
+
+        {{AssCall,LPAREN},68},
         {{AssignmentRest,DOT},69},
         {{AssignmentRest,LMIDPAREN},69},
         {{AssignmentRest,ASSIGN},69},
@@ -206,13 +209,13 @@ LL1_parse::LL1_parse(const Token *root):head(root) {
         {{InVar,ID},73},
         {{OutputStm,WRITE},74},
         {{ReturnStm,RETURN},75},
-        {{CallStmRest,LMIDPAREN},76},
+        {{CallStmRest,LPAREN},76},
         {{ActParamList,INTC_VAL},78},
         {{ActParamList,ID},78},
-        {{ActParamList,LMIDPAREN},78},
-        {{ActParamList,RMIDPAREN},77},
+        {{ActParamList,LPAREN},78},
+        {{ActParamList,RPAREN},77},
         {{ActParamMore,COMMA},80},
-        {{ActParamMore,RMIDPAREN},79},
+        {{ActParamMore,RPAREN},79},
         {{RelExp,INTC_VAL},81},
         {{RelExp,ID},81},
         {{RelExp,LMIDPAREN},81},
@@ -424,6 +427,8 @@ void LL1_parse::run() {
               lineno=head->getLine();
           }else{
               qDebug()<<"unexpected token:"<<head->getLexName()<<" in line "<<lineno;//TODO ERROR not match
+              head=head->next;
+              //TODO error handing : just jump over
           }
 
       }
