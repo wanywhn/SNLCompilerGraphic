@@ -1265,7 +1265,6 @@ void LL1_parse::process(int id)
        current_treenode->attr.ExpAttr.op = head->getLex();
        LexType  sTop=op_stack.top()->attr.ExpAttr.op;
        while ( Priosity(sTop) >= Priosity(head->getLex()) )
-       /*如果操作符栈顶运算符的优先级高于或等于当前读到的操作符*/
        {   TreeNode *t=op_stack.pop();
            TreeNode *Rnum=num_stack.pop();
            TreeNode *Lnum=num_stack.pop();

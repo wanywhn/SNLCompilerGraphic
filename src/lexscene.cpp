@@ -1,6 +1,7 @@
 #include "lexscene.h"
 
 #include <QDebug>
+#include <QThread>
 
 LexScene::LexScene() {
     r=20;
@@ -27,6 +28,38 @@ LexScene::LexScene() {
             {40,41}
     };
     round=QSet<int>::fromList({0,1,7,13,16,18,22,25,27,31,33,35,39,41});
+    nameid=QSet<int>::fromList({0,3,5,6,9,11,12,14,15,16,17,19,20,21,22,23,24,25,26,28,29,30,31,32,33,36,37,38,40});
+    nameid_string={
+        {0,"字母"},
+        {3,"字母，数字"},
+        {5,"表示扶"},
+        {6,"数字"},
+        {9,"数字"},
+        {11,"无符号整数"},
+        {12,"+,-,*,/,(,),;,[,],=,<,EOF,空白"},
+        {14,"单分界符"},
+        {15,":"},
+        {16,"="},
+        {17,"其他符号"},
+        {19,"出错"},
+        {20,"双分界符"},
+        {21,"{"},
+        {22,"注释状态"},
+        {23,"注释结束"},
+        {24,"."},
+        {25,"."},
+        {26,"其他符号"},
+        {28,"程序结束标志"},
+        {29,"数组下标"},
+        {30,"'"},
+        {31,"数字或字母"},
+        {32,"其他符号"},
+        {33,"'"},
+        {36,"字符状态"},
+        {37,"出错"},
+        {38,"其他"},
+        {40,"出错"},
+    };
 
     for(int i=0;i!=pos.length();++i){
         if(round.contains(i)){
@@ -37,6 +70,12 @@ LexScene::LexScene() {
             auto p=addLine(0,0,0,0);
             p->setPos(pos.at(i));
             items.append(p);
+        }
+        if(nameid.contains(i)){
+            auto tt=addText(nameid_string[i]);
+            tt->setScale(0.7);
+            tt->setPos(pos.at(i)+QPoint(4,0));
+
         }
     }
     for(auto item:line){
@@ -56,7 +95,6 @@ void LexScene::show_path(QVector<QPair<int, int> > v)
     QPen pen;
     pen.setColor(Qt::red);
     pen.setWidth(3);
-//    qDebug()<<v;
     for(auto item:v){
         auto x=items.at(item.first);
         auto y=items.at(item.second);

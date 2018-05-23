@@ -25,6 +25,8 @@ private:
     QVector<QPoint> line;
     int r;
     QSet<int> round;
+    QSet<int> nameid;
+    QMap<int,QString> nameid_string;
 
     QVector<QGraphicsItem *>path_item;
 

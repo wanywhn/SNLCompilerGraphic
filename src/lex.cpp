@@ -290,8 +290,10 @@ void Lex::run()
         }
         default: {
 
+            if(' '!=lookhead&&32!=lookhead&&9!=lookhead){
             qDebug()<<"unexpected char:"<<lookhead<<" in line:"<<line_number;
             emit go_path({{0,38},{38,40},{40,41}});
+            }
         }
         }
       }

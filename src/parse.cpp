@@ -507,7 +507,7 @@ TreeNode *Parse::varDecMore() {
             t = varDecList();
             break;
         default:
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token"+head->getLexName()+" is here in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -521,7 +521,7 @@ void Parse::varIdList(TreeNode *t) {
         match(ID);
         t->idnum = (t->idnum) + 1;
     } else {
-        syntaxError("a varid is expected here!");
+        syntaxError("a varid is expected here! in line:"+QString::number(lineno));
    //     head = head->next;
     }
     varIdMore(t);
@@ -541,7 +541,7 @@ void Parse::varIdMore(TreeNode *t) {
             break;
         default:
     //        head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+ "is here! in line:"+QString::number(lineno));
             break;
     }
 }
@@ -589,7 +589,7 @@ TreeNode *Parse::stmMore() {
             break;
         default:
       //      head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+"is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -629,7 +629,7 @@ TreeNode *Parse::stm() {
             break;
         default:
       //      head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+"is here! in  line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -652,7 +652,7 @@ TreeNode *Parse::assCall() {
             break;
         default:
      //       head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+"is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -669,7 +669,7 @@ TreeNode *Parse::assignmentRest() {
     if (t != nullptr) {
         t->lineno = line0;
 
-        /*处理第一个儿子结点，为变量表达式类型节点*/
+
         TreeNode *child1 = newExpNode(VariK);
         if (child1 != nullptr) {
             child1->lineno = line0;
@@ -679,10 +679,10 @@ TreeNode *Parse::assignmentRest() {
             t->child[0] = child1;
         }
 
-        /*赋值号匹配*/
+
         match(ASSIGN);
 
-        /*处理第二个儿子节点*/
+
         t->child[1] = mexp();
 
     }
@@ -780,7 +780,7 @@ TreeNode *Parse::callStmRest() {
     if (t != nullptr) {
         t->lineno = line0;
 
-        /*函数名的结点也用表达式类型结点*/
+
         TreeNode *child0 = newExpNode(VariK);
         if (child0 != nullptr) {
             child0->lineno = line0;
@@ -812,7 +812,7 @@ TreeNode *Parse::actParamList() {
             break;
         default:
     //        head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -833,7 +833,7 @@ TreeNode *Parse::actParamMore() {
             break;
         default:
       //      head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -846,35 +846,33 @@ TreeNode *Parse::actParamMore() {
 /* 产生式 < 表达式 > ::= < 简单表达式 > [< 关系运算符 > < 简单表达式 > ]	*/
 /****************************************************************************/
 TreeNode *Parse::mexp() {
-    /* 调用简单表达式处理函数simple_exp(),返回语法树节点指针给t */
+
     TreeNode *t = simple_exp();
 
-    /* 当前单词token为逻辑运算单词LT或者EQ */
+
     if ((head->getLex() == LT) || (head->getLex() == EQ)) {
-        /* 创建新的OpK类型语法树节点，新语法树节点指针赋给p */
+
         TreeNode *p = newExpNode(OpK);
 
-        /* 新语法树节点p创建成功,初始化p第一个子节点成员child[0]
-         * 并将当前单词token(为EQ或者LT)赋给语法树节点p的运算符成员attr.op*/
+
         if (p != nullptr) {
             p->lineno = line0;
             p->child[0] = t;
             p->attr.ExpAttr.op = head->getLex();
 
-            /* 将新的表达式类型语法树节点p作为函数返回值t */
+
             t = p;
         }
 
-        /* 当前单词token与指定逻辑运算符单词(为EQ或者LT)匹配 */
+
         match(head->getLex());
 
-        /* 语法树节点t非空,调用简单表达式处理函数simple_exp()	*
-         * 函数返回语法树节点指针给t的第二子节点成员child[1]	*/
+
         if (t != nullptr)
             t->child[1] = simple_exp();
     }
 
-    /* 函数返回表达式类型语法树节点t */
+
     return t;
 }
 
@@ -883,32 +881,31 @@ TreeNode *Parse::mexp() {
 /* 产生式 < 简单表达式 >::=	< 项 > { < 加法运算符 > < 项 > }			*/
 /************************************************************************/
 TreeNode *Parse::simple_exp() {
-    /* 调用元处理函数term(),函数返回语法树节点指针给t */
+
     TreeNode *t = term();
 
-    /* 当前单词token为加法运算符单词PLUS或MINUS */
+
     while ((head->getLex() == PLUS) || (head->getLex() == MINUS)) {
-        /* 创建新OpK表达式类型语法树节点，新语法树节点指针赋给p */
+
         TreeNode *p = newExpNode(OpK);
 
-        /* 语法树节点p创建成功,初始化p第一子节点成员child[0]	*
-        * 返回语法树节点指针给p的运算符成员attr.op				*/
+
         if (p != nullptr) {
             p->lineno = line0;
             p->child[0] = t;
             p->attr.ExpAttr.op = head->getLex();
 
-            /* 将函数返回值t赋成语法树节点p */
+
             t = p;
 
-            /* 当前单词token与指定加法运算单词(为PLUS或MINUS)匹配 */
+
             match(head->getLex());
 
-            /* 调用元处理函数term(),函数返回语法树节点指针给t的第二子节点成员child[1] */
+
             t->child[1] = term();
         }
     }
-    /* 函数返回表达式类型语法树节点t */
+
     return t;
 }
 
@@ -926,7 +923,7 @@ TreeNode *Parse::procDec() {
             break;
         default:
             //head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -960,7 +957,7 @@ void Parse::fidMore(TreeNode *t) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
 }
@@ -970,10 +967,6 @@ void Parse::fidMore(TreeNode *t) {
 /*                                 procDecPart                      */
 /*                                 procBody                         */
 /*                                 procDec                          */
-/* 说  明 函数根据文法产生式,调用相应的递归处理函数,生成语法树节点  */
-/*        函数的根节点用于记录该函数的名字；第一个子节点指向参数节  */
-/*        点，第二个节点指向函数中的声明部分节点；第三个节点指向函  */
-/*        数体。
 /********************************************************************/
 TreeNode *Parse::procDeclaration() {
     TreeNode *t = newProcNode();
@@ -1037,7 +1030,7 @@ void Parse::paramList(TreeNode *t) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
 }
@@ -1071,7 +1064,7 @@ TreeNode *Parse::paramMore() {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
     return t;
@@ -1103,7 +1096,7 @@ TreeNode *Parse::mparam() {
             default:
                 head = head->next;
 
-                syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
                 break;
         }
     }
@@ -1116,16 +1109,15 @@ TreeNode *Parse::mparam() {
 /* 产生式 < 项 > ::= < 因子 > { < 乘法运算符 > < 因子 > }					*/
 /****************************************************************************/
 TreeNode *Parse::term() {
-    /* 调用因子处理函数factor(),函数返回语法树节点指针给t */
+
     TreeNode *t = factor();
 
-    /* 当前单词token为乘法运算符单词TIMES或OVER */
+
     while ((head->getLex() == TIMES) || (head->getLex() == DIVIDE)) {
-        /* 创建新的OpK表达式类型语法树节点,新节点指针赋给p */
+
         treeNode *p = newExpNode(OpK);
 
-        /* 新语法树节点p创建成功,初始化第一个子节点成员child[0]为t	*
-         * 将当前单词token赋值给语法树节点p的运算符成员attr.op		*/
+
         if (p != nullptr) {
             p->lineno = line0;
             p->child[0] = t;
@@ -1133,14 +1125,14 @@ TreeNode *Parse::term() {
             t = p;
         }
 
-        /* 当前单词token与指定乘法运算符单词(为TIMES或OVER)匹配 */
+
         match(head->getLex());
 
-        /* 调用因子处理函数factor(),函数返回语法树节点指针赋给p第二个子节点成员child[1] */
+
         p->child[1] = factor();
 
     }
-    /* 函数返回表达式类型语法树节点t */
+
     return t;
 }
 
@@ -1149,59 +1141,57 @@ TreeNode *Parse::term() {
 /* 产生式 factor ::= ( exp ) | INTC | variable                  			*/
 /****************************************************************************/
 TreeNode *Parse::factor() {
-    /* 函数返回语法树节点指针t初始为为nullptr */
+
     TreeNode *t = nullptr;
 
     switch (head->getLex()) {
         case INTC_VAL :
 
-            /* 创建新的ConstK表达式类型语法树节点,赋值给t */
+
             t = newExpNode(ConstK);
 
-            /* 新语法树节点t创建成功,当前单词token为数字单词NUM						*
-             * 将当前单词名tokenString转换为整数并赋给语法树节点t的数值成员attr.val	*/
+
             if ((t != nullptr) && (head->getLex() == INTC_VAL)) {
                 t->lineno = line0;
                 t->attr.ExpAttr.val = head->getSem().toInt();
             }
 
-            /* 当前单词token与数字单词NUM匹配 */
+
             match(INTC_VAL);
             break;
 
-            /* 当前单词token为标识符单词ID */
+
         case ID :
 
-            /* 创建新的IdK表达式类型语法树节点t */
+
             t = variable();
             break;
 
-            /* 当前单词token为左括号单词LPAREN */
+
         case LPAREN :
 
-            /* 当前单词token与左括号单词LPAREN匹配 */
+
             match(LPAREN);
 
-            /* 调用表达式处理函数exp(),函数返回语法树节点指针给t */
+
             t = mexp();
 
-            /* 当前单词token与右括号单词RPAREN匹配 */
+
             match(RPAREN);
 
             break;
 
-            /* 当前单词token为其它单词 */
+
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
-    /* 函数返回表达式类型语法树节点t */
+
     return t;
 }
 
-/********************************************************************/
-/* 功  能 变量处理函数												*/
+/********************************************************************/		
 /* 产生式 variable   ::=   id variMore                   			*/
 /********************************************************************/
 TreeNode *Parse::variable() {
@@ -1220,7 +1210,7 @@ TreeNode *Parse::variable() {
 
 
 /********************************************************************/
-/* 功  能 变量处理函数												*/
+
 /* 产生式 variMore   ::=  ε                             			*/
 /*                       | [exp]            {[}                     */
 /*                       | . fieldvar       {DOT}                   */
@@ -1249,18 +1239,18 @@ void Parse::variMore(TreeNode *t) {
         case LMIDPAREN:
             match(LMIDPAREN);
 
-            /*用来以后求出其表达式的值，送入用于数组下标计算*/
+
             t->child[0] = mexp();
 
             t->attr.ExpAttr.varkind = ArrayMembV;
 
-            /*此表达式为数组成员变量类型*/
+
             t->child[0]->attr.ExpAttr.varkind = IdV;
             match(RMIDPAREN);
             break;
         case DOT:
             match(DOT);
-            /*第一个儿子指向域成员变量结点*/
+
             t->child[0] = fieldvar();
 
             t->attr.ExpAttr.varkind = FieldMembV;
@@ -1269,16 +1259,15 @@ void Parse::variMore(TreeNode *t) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
 }
 /********************************************************************/
-/* 功  能 变量处理函数												*/
-/* 产生式 fieldvar   ::=  id  fieldvarMore                          */
+/* 产生式 fieldvar   ::=  id  fieldvarMore                          *
 /********************************************************************/
 TreeNode *Parse::fieldvar() {
-    /*注意，可否将此处的IdEK改为一个新的标识，用来记录记录类型的域*/
+
     TreeNode *t = newExpNode(VariK);
 
     if ((t != nullptr) && (head->getLex() == ID)) {
@@ -1326,7 +1315,7 @@ void Parse::fieldvarMore(TreeNode *t) {
             break;
         default:
             head = head->next;
-            syntaxError("unexpected token is here!");
+            syntaxError("unexpected token "+head->getLexName()+" is here! in line:"+QString::number(lineno));
             break;
     }
 }
