@@ -17,6 +17,6 @@ file(GLOB_RECURSE RESOURCES "*.qrc")
 set(QTPKG Core Gui Widgets)
 find_package(Qt5 REQUIRED ${QTPKG})
 
-add_executable(${TARGET_NAME} ${SOURCES} ${HEADERS} ${FORMS} ${RESOURCES} utils.cpp utils.h)
+add_executable(${TARGET_NAME} ${SOURCES} ${HEADERS} ${FORMS} ${RESOURCES})
 
 qt5_use_modules(${TARGET_NAME} ${QTPKG})

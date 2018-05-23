@@ -61,6 +61,8 @@ public slots:
 
     void re_parse();
     void ll1_parse();
+
+    bool eventFilter(QObject *watched, QEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
